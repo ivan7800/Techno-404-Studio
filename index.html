@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="es" data-skin="carbon" data-ui-mode="cinematic" data-density="normal">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#070a0f">
+  <meta name="description" content="Techno 404 Studio v4.2.0: workstation techno premium con skins, arranger, clips MIDI, sampler multipad, modulación y exportación en el navegador.">
+  <title>Techno 404 Studio v4.2.0</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon-192.png">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<div class="app-shell">
+  <header class="topbar panel">
+    <div class="brand">
+      <div class="brand-mark">404</div>
+      <div><strong>TECHNO 404 STUDIO</strong><span>V4.2.0 · PREMIUM MODULAR BROWSER DAW</span></div>
+    </div>
+    <div class="transport">
+      <button id="playBtn" class="primary">▶ PATTERN</button>
+      <button id="arrangerPlayBtn" class="accent">▶ ARRANGER</button>
+      <button id="stopBtn">■ STOP</button>
+      <button id="tapBtn">TAP</button>
+      <label>BPM <input id="bpmInput" type="number" min="70" max="210" value="136"></label>
+      <label>SWING <input id="swingInput" type="range" min="0" max="70" value="10"><span id="swingValue">10%</span></label>
+      <span id="transportState" class="badge">STOPPED</span>
+    </div>
+    <div class="project-actions">
+      <div class="appearance-controls" aria-label="Apariencia">
+        <label><span><i class="skin-dot"></i>SKIN</span><select id="skinSelect" title="Skin visual (Shift+T para cambiar)">
+          <option value="carbon">Carbon</option><option value="acid">Acid Lime</option><option value="detroit">Detroit Amber</option>
+          <option value="ultraviolet">Ultraviolet</option><option value="ice">Ice Blue</option><option value="crimson">Crimson</option><option value="studio-light">Studio Light</option>
+        </select></label>
+        <label>UI <select id="uiModeSelect" class="ui-mode-select" title="Cinematic = máximo acabado; Performance = mínimo coste visual">
+          <option value="cinematic">Cinematic</option><option value="clean">Clean</option><option value="performance">Performance</option>
+        </select></label>
+        <label>DENSITY <select id="densitySelect" class="ui-mode-select"><option value="normal">Normal</option><option value="compact">Compact</option></select></label>
+      </div>
+      <label>PROJECT <input id="projectNameInput" type="text" maxlength="80" value="Untitled Techno"></label>
+      <button id="newBtn">NUEVO</button>
+      <button id="saveBtn">GUARDAR</button>
+      <button id="exportProjectBtn">JSON ↓</button>
+      <label class="file-btn">JSON ↑<input id="importProjectInput" type="file" accept="application/json" hidden></label>
+      <button id="exportWavBtn" class="accent">EXPORT MIX</button>
+      <button id="exportStemsBtn" class="accent">STEMS WAV ZIP</button>
+    </div>
+  </header>
+
+  <section class="control-strip panel">
+    <div class="control-group">
+      <label>STEPS <select id="stepsSelect"><option>16</option><option>32</option><option selected>64</option></select></label>
+      <label>PATTERN <select id="patternSelect"></select></label>
+      <button id="duplicatePatternBtn">DUPLICATE</button>
+      <button id="clearPatternBtn">CLEAR</button>
+      <button id="undoBtn">↶</button>
+      <button id="redoBtn">↷</button>
+      <button id="humanizeBtn">HUMANIZE</button>
+      <button id="euclidBtn">EUCLID</button>
+    </div>
+    <div class="control-group generator">
+      <label>STYLE <select id="styleSelect">
+        <option value="hypnotic">Hypnotic</option><option value="detroit">Detroit</option><option value="minimal">Minimal</option>
+        <option value="acid">Acid</option><option value="industrial">Industrial</option><option value="hard">Hard Techno</option>
+        <option value="dub">Dub Techno</option><option value="peak">Peak Time</option>
+      </select></label>
+      <label>ENERGY <input id="energyInput" type="range" min="0" max="100" value="72"></label>
+      <label>DARK <input id="darkInput" type="range" min="0" max="100" value="78"></label>
+      <label>COMPLEX <input id="complexInput" type="range" min="0" max="100" value="58"></label>
+      <button id="generateBtn" class="accent">GENERATE TECHNO</button>
+    </div>
+  </section>
+
+  <section class="workspace">
+    <aside class="left-stack">
+      <div class="panel compact-panel">
+        <div class="section-title"><h2>LIVE SCENES</h2><span>Quantized</span></div>
+        <div id="liveScenes" class="scene-grid"></div>
+      </div>
+      <div class="panel compact-panel">
+        <div class="section-title"><h2>PERFORM</h2><span>PC / MIDI</span></div>
+        <div class="keyboard-map">A Kick · S Clap · D CHH · F OHH · G Perc · H Bass · J Stab · K Acid</div>
+        <div class="row-wrap"><button id="midiBtn">ACTIVAR MIDI</button><span id="midiState" class="badge">MIDI OFF</span></div>
+      </div>
+      <div class="panel compact-panel meters-panel">
+        <div class="section-title"><h2>MASTER SCOPE</h2><span>FFT</span></div>
+        <canvas id="miniSpectrumCanvas" role="img" aria-label="Analizador de espectro" width="320" height="150"></canvas>
+      </div>
+    </aside>
+
+    <main class="main-stack">
+      <section class="sequencer panel">
+        <div class="section-title"><h2>STEP SEQUENCER</h2><span id="selectedTrackLabel">KICK</span></div>
+        <div id="sequencerGrid" class="sequencer-grid"></div>
+      </section>
+
+      <section class="panel arranger-panel">
+        <div class="section-title"><h2>ARRANGER</h2><span>DRAG & DROP CLIPS · 1 BAR = 16 STEPS</span></div>
+        <div class="arranger-toolbar">
+          <label>LENGTH <input id="arrangerBarsInput" type="number" min="1" max="64" value="8"> BARS</label>
+          <label><input id="arrangerEnabledInput" type="checkbox"> ARRANGER ON</label>
+          <label><input id="arrangerLoopInput" type="checkbox" checked> LOOP</label>
+          <label>AUTOMATION <select id="arrangerAutomationPattern"></select></label>
+          <label>CLIP PATTERN <select id="arrangerClipPattern"></select></label>
+          <label>ZOOM <input id="arrangerZoomInput" type="range" min="0.5" max="2.5" step="0.25" value="1"></label>
+          <button id="addClipBtn">ADD CLIP</button>
+          <button id="generateArrangementBtn">BUILD ARRANGEMENT</button>
+          <span class="hint">Doble clic en una celda: crea clip · arrastra un clip para moverlo.</span>
+        </div>
+        <div id="arrangerGrid" class="arranger-grid"></div>
+        <div class="clip-inspector">
+          <strong>CLIP</strong>
+          <span id="clipInspectorLabel" class="muted-text">Ninguno seleccionado</span>
+          <label>TYPE <select id="clipTypeInput"><option value="pattern">PATTERN</option><option value="midi">MIDI</option></select></label>
+          <label>SOURCE <select id="clipSourceInput"></select></label>
+          <label class="legacy-pattern">PATTERN <select id="clipPatternInput"></select></label>
+          <label>BARS <input id="clipBarsInput" type="number" min="1" max="16" value="1"></label>
+          <button id="duplicateClipBtn">DUPLICATE</button>
+          <button id="deleteClipBtn" class="danger">DELETE</button>
+        </div>
+      </section>
+
+      <section class="lower-grid">
+        <div class="panel mixer-panel wide-panel">
+          <div class="section-title"><h2>MIXER / CHANNEL STRIPS</h2><span>EQ · FILTER · SENDS · SIDECHAIN</span></div>
+          <div id="mixer" class="mixer"></div>
+        </div>
+
+        <div class="panel editor-panel">
+          <div class="section-title"><h2>STEP EDITOR</h2><span id="selectedStepLabel">Selecciona un paso</span></div>
+          <div class="editor-controls">
+            <label>VELOCITY <input id="velocityInput" type="range" min="1" max="127" value="100"></label>
+            <label>PROB <input id="probabilityInput" type="range" min="1" max="100" value="100"></label>
+            <label>RATCHET <input id="ratchetInput" type="range" min="1" max="4" value="1"></label>
+            <label>PITCH <input id="pitchInput" type="range" min="-24" max="36" value="0"></label>
+            <label>MICRO <input id="microInput" type="range" min="-40" max="40" value="0"></label>
+            <label>GATE <input id="gateInput" type="range" min="5" max="100" value="72"></label>
+            <label>FILTER LOCK <input id="stepCutoffInput" type="range" min="0" max="100" value="60"></label>
+            <label class="checkline"><input id="accentInput" type="checkbox"> ACCENT</label>
+            <label class="checkline"><input id="glideInput" type="checkbox"> GLIDE</label>
+            <button id="copyStepBtn">COPY</button><button id="pasteStepBtn">PASTE</button>
+          </div>
+        </div>
+
+        <div class="panel acid-panel">
+          <div class="section-title"><h2>ACID PIANO ROLL</h2><span>TB-STYLE NOTE EDITOR</span></div>
+          <div class="piano-toolbar">
+            <label>PAGE <select id="pianoPageSelect"><option value="0">1</option><option value="1">2</option><option value="2">3</option><option value="3">4</option></select></label>
+            <label>OCTAVE <select id="pianoOctaveSelect"><option value="1">1</option><option value="2" selected>2</option><option value="3">3</option></select></label>
+            <button id="acidRandomBtn">ACID LINE</button>
+          </div>
+          <div id="pianoRoll" class="piano-roll"></div>
+        </div>
+
+        <div class="panel automation-panel">
+          <div class="section-title"><h2>AUTOMATION DRAW</h2><span>Dibuja con el ratón / táctil</span></div>
+          <div class="automation-toolbar">
+            <label>PARAM <select id="automationParamSelect">
+              <option value="filter">Master Filter</option><option value="delay">Delay</option><option value="reverb">Reverb</option>
+              <option value="master">Master Volume</option><option value="drive">Drive</option><option value="acidCutoff">Acid Cutoff</option>
+            </select></label>
+            <button id="automationResetBtn">RESET LANE</button>
+          </div>
+          <canvas id="automationCanvas" width="1000" height="220" role="img" aria-label="Editor gráfico de automatización"></canvas>
+          <div id="automationReadout" class="automation-readout">STEP 1 · 0%</div>
+        </div>
+
+        <div class="panel sampler-panel">
+          <div class="section-title"><h2>SAMPLER / WAVEFORM</h2><span id="sampleState">SYNTH ENGINE</span></div>
+          <div class="sampler-toolbar">
+            <label class="file-btn">LOAD SAMPLE<input id="sampleInput" type="file" accept="audio/*,.wav,.mp3,.ogg" hidden></label>
+            <button id="previewSampleBtn">▶ PREVIEW</button>
+            <button id="clearSampleBtn">RESET SAMPLE</button>
+            <label>START <input id="sampleStartInput" type="range" min="0" max="99" value="0"></label>
+            <label>END <input id="sampleEndInput" type="range" min="1" max="100" value="100"></label>
+            <label>GAIN <input id="sampleGainInput" type="range" min="0" max="200" value="100"></label>
+            <label class="checkline"><input id="sampleReverseInput" type="checkbox"> REVERSE</label>
+          </div>
+          <canvas id="waveformCanvas" width="1000" height="220" role="img" aria-label="Forma de onda del sample seleccionado"></canvas>
+          <div id="sampleInfo" class="muted-text">Selecciona una pista y carga un WAV/MP3/OGG. El sample se guarda localmente en IndexedDB.</div>
+        </div>
+
+
+        <div class="panel midi-clip-panel wide-panel">
+          <div class="section-title"><h2>MIDI CLIPS / PIANO ROLL</h2><span>EDITABLE NOTES · VELOCITY · LENGTH · DRAG</span></div>
+          <div class="midi-toolbar">
+            <label>CLIP <select id="midiClipSelect"></select></label>
+            <label>NAME <input id="midiClipNameInput" type="text" maxlength="80" value="Acid Hook"></label>
+            <label>TRACK <select id="midiClipTrackInput"><option value="bass">BASS</option><option value="stab">STAB</option><option value="acid">ACID</option></select></label>
+            <label>BARS <input id="midiClipBarsInput" type="number" min="1" max="8" value="2"></label>
+            <button id="newMidiClipBtn">NEW MIDI</button><button id="duplicateMidiClipBtn">DUPLICATE</button><button id="deleteMidiClipBtn" class="danger">DELETE</button>
+            <button id="addMidiToArrangerBtn" class="accent">ADD TO ARRANGER</button>
+          </div>
+          <div class="midi-note-toolbar">
+            <span id="midiNoteInfo" class="muted-text">Haz clic para crear una nota</span>
+            <label>VELOCITY <input id="midiNoteVelocityInput" type="range" min="1" max="127" value="100"></label>
+            <label>LENGTH <input id="midiNoteLengthInput" type="range" min="1" max="16" value="1"></label>
+          </div>
+          <div class="piano-scroll"><canvas id="midiPianoCanvas" width="1400" height="648" role="img" aria-label="Piano roll del clip MIDI"></canvas></div>
+          <div class="muted-text">Clic: crear/seleccionar · arrastrar: mover · botón derecho: eliminar. Rango C2–B4.</div>
+        </div>
+
+        <div class="panel pads-panel wide-panel">
+          <div class="section-title"><h2>SAMPLER MULTIPAD + SAMPLE BROWSER</h2><span>16 PADS · INDEXEDDB · OFFLINE LIBRARY</span></div>
+          <div class="pads-browser-layout">
+            <div>
+              <div id="padGrid" class="pad-grid"></div>
+              <div class="pad-toolbar">
+                <strong id="padSelectedLabel">PAD 01 · EMPTY</strong>
+                <label class="file-btn">LOAD PAD<input id="padSampleInput" type="file" accept="audio/*,.wav,.mp3,.ogg" hidden></label>
+                <button id="clearPadBtn">CLEAR PAD</button>
+                <label>GAIN <input id="padGainInput" type="range" min="0" max="200" value="100"></label>
+                <label>PITCH <input id="padPitchInput" type="range" min="-24" max="24" value="0"></label>
+              </div>
+              <div class="muted-text">Teclado pads: 1 2 3 4 · Q W E R · Z X C V · 5 6 7 8</div>
+            </div>
+            <div class="library-pane">
+              <div class="library-toolbar">
+                <label class="file-btn">IMPORT SAMPLES<input id="libraryInput" type="file" accept="audio/*,.wav,.mp3,.ogg,.m4a,.aac" multiple hidden></label>
+                <input id="librarySearchInput" type="text" placeholder="Buscar sample…">
+              </div>
+              <div id="sampleLibraryList" class="sample-library-list"></div>
+              <div class="library-actions"><span id="librarySelectedLabel" class="muted-text">Ningún sample seleccionado</span><button id="previewLibraryBtn">▶ PREVIEW</button><button id="assignLibraryPadBtn">→ PAD</button><button id="assignLibraryTrackBtn">→ TRACK</button><button id="deleteLibraryBtn" class="danger">DELETE</button></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel mod-fx-panel wide-panel">
+          <div class="section-title"><h2>MODULATION / DEDICATED FX BUSES</h2><span>2 LFO · DELAY · REVERB</span></div>
+          <div class="mod-fx-grid">
+            <div class="fx-card"><h3>DELAY BUS</h3><label>TIME <input id="fxDelayTimeInput" type="range" min="0.0625" max="1.5" step="0.0625" value="0.375"></label><label>FEEDBACK <input id="fxDelayFeedbackInput" type="range" min="0" max="88" value="34"></label><label>TONE <input id="fxDelayToneInput" type="range" min="0" max="100" value="68"></label></div>
+            <div class="fx-card"><h3>REVERB BUS</h3><label>DECAY <input id="fxReverbDecayInput" type="range" min="0.3" max="6" step="0.1" value="2.3"></label><label>TONE <input id="fxReverbToneInput" type="range" min="0" max="100" value="72"></label></div>
+            <div class="fx-card"><h3>LFO 1</h3><label><input id="lfo1Enabled" type="checkbox"> ENABLED</label><label>TARGET <select id="lfo1Target"><option value="off">OFF</option><option value="masterFilter">Master Filter</option><option value="acidCutoff">Acid Cutoff</option><option value="delay">Delay</option><option value="reverb">Reverb</option><option value="drive">Drive</option><option value="bassFilter">Bass Filter</option><option value="stabFilter">Stab Filter</option><option value="acidFilter">Acid Filter</option></select></label><label>WAVE <select id="lfo1Wave"><option>sine</option><option>triangle</option><option>square</option><option value="saw">saw</option></select></label><label>RATE <input id="lfo1Rate" type="number" min="0.03125" max="16" step="0.03125" value="0.5"></label><label><input id="lfo1Sync" type="checkbox" checked> SYNC</label><label>DEPTH <input id="lfo1Depth" type="range" min="0" max="100" value="35"></label></div>
+            <div class="fx-card"><h3>LFO 2</h3><label><input id="lfo2Enabled" type="checkbox"> ENABLED</label><label>TARGET <select id="lfo2Target"><option value="off">OFF</option><option value="masterFilter">Master Filter</option><option value="acidCutoff">Acid Cutoff</option><option value="delay">Delay</option><option value="reverb">Reverb</option><option value="drive">Drive</option><option value="bassFilter">Bass Filter</option><option value="stabFilter">Stab Filter</option><option value="acidFilter">Acid Filter</option></select></label><label>WAVE <select id="lfo2Wave"><option>sine</option><option>triangle</option><option>square</option><option value="saw">saw</option></select></label><label>RATE <input id="lfo2Rate" type="number" min="0.03125" max="16" step="0.03125" value="0.25"></label><label><input id="lfo2Sync" type="checkbox" checked> SYNC</label><label>DEPTH <input id="lfo2Depth" type="range" min="0" max="100" value="22"></label></div>
+          </div>
+        </div>
+
+        <div class="panel master-panel wide-panel">
+          <div class="section-title"><h2>MASTER / FX / DYNAMICS</h2><span>BUS PROCESSING</span></div>
+          <div class="master-controls">
+            <label>MASTER <input id="masterInput" type="range" min="0" max="100" value="82"></label>
+            <label>FILTER <input id="masterFilterInput" type="range" min="300" max="18000" value="16000"></label>
+            <label>DRIVE <input id="driveInput" type="range" min="0" max="100" value="18"></label>
+            <label>DELAY <input id="delayInput" type="range" min="0" max="100" value="15"></label>
+            <label>REVERB <input id="reverbInput" type="range" min="0" max="100" value="10"></label>
+            <label>COMP <input id="compressorInput" type="range" min="0" max="100" value="38"></label>
+            <label>ACID CUTOFF <input id="bassCutoffInput" type="range" min="80" max="7000" value="1200"></label>
+            <label>RESONANCE <input id="bassResInput" type="range" min="0" max="28" value="15"></label>
+            <label>SC RELEASE <input id="sidechainReleaseInput" type="range" min="60" max="600" value="180"></label>
+            <label class="checkline"><input id="limiterInput" type="checkbox" checked> LIMITER</label>
+            <label>CEILING <input id="limiterCeilingInput" type="range" min="-12" max="0" step="0.5" value="-1"></label>
+          </div>
+        </div>
+
+        <div class="panel song-panel wide-panel">
+          <div class="section-title"><h2>SONG MODE / EXPORT</h2><span>LEGACY CHAIN + RENDER</span></div>
+          <div class="song-controls">
+            <label>CHAIN <input id="songChainInput" value="A1,A1,A2,B1,B1,C1,C1,D1"></label>
+            <label>REPEATS <input id="songRepeatsInput" type="number" min="1" max="16" value="2"></label>
+            <label>BARS <input id="wavBarsInput" type="number" min="1" max="32" value="4"></label>
+            <label>FORMAT <select id="exportFormatSelect"><option value="wav">WAV 16-bit</option><option value="mp3" selected>MP3</option><option value="flac">FLAC</option></select></label>
+            <label class="mp3-export-option">MP3 <select id="mp3BitrateSelect"><option value="128">128 kbps</option><option value="192">192 kbps</option><option value="256">256 kbps</option><option value="320" selected>320 kbps</option></select></label>
+            <label class="flac-export-option" hidden>FLAC LEVEL <input id="flacCompressionInput" type="number" min="0" max="8" value="5"></label>
+            <label class="checkline"><input id="exportNormalizeInput" type="checkbox" checked> NORMALIZE -1 dB</label>
+            <label>FADE IN <input id="exportFadeInInput" type="number" min="0" max="10" step="0.1" value="0"></label>
+            <label>FADE OUT <input id="exportFadeOutInput" type="number" min="0" max="10" step="0.1" value="0.2"></label>
+            <label>TAIL <input id="exportTailInput" type="number" min="0" max="15" step="0.1" value="0" title="0 = automático según delay/reverb"></label>
+            <button id="prepareCodecsBtn" title="Descarga y cachea los codecs MP3/FLAC para poder reutilizarlos offline">PREPARAR CODECS</button>
+            <span id="codecState" class="badge">CODECS: bajo demanda</span>
+            <button id="songPlayBtn">▶ SONG</button><button id="songStopBtn">■ STOP SONG</button>
+            <span class="muted-text">Con Arranger activo se exporta el arreglo completo. TAIL 0 = automático. STEMS permanecen WAV sin master.</span>
+          </div>
+        </div>
+      </section>
+    </main>
+  </section>
+
+  <footer><span>Techno 404 Studio v4.2.0</span><span id="statusText" role="status" aria-live="polite">Listo.</span><span>7 Skins · Premium UI · Web Audio · MIDI · WAV · MP3 · FLAC · Stems · PWA</span></footer>
+</div>
+
+<script src="js/state.js"></script>
+<script src="js/arranger.js"></script>
+<script src="js/midi-clips.js"></script>
+<script src="js/audio-engine.js"></script>
+<script src="js/modulation.js"></script>
+<script src="js/sequencer.js"></script>
+<script src="js/generator.js"></script>
+<script src="js/midi.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/codecs.js"></script>
+<script src="js/exporter.js"></script>
+<script src="js/v4-ui.js"></script>
+<script src="js/premium-ui.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

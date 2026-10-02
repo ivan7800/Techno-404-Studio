@@ -1,0 +1,24 @@
+{
+  "name": "Techno 404 Studio",
+  "short_name": "Techno404",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#06080c",
+  "theme_color": "#070a0f",
+  "description": "Techno workstation v4.2.0 con interfaz premium, 7 skins, arranger, clips MIDI, sampler multipad, LFO, FX y exportación WAV/MP3/FLAC/stems.",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "id": "./",
+  "lang": "es"
+}
