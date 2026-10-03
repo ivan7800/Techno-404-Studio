@@ -1,7 +1,31 @@
-# Techno 404 Studio v4.2.0
+# Techno 404 Studio v4.3.0
 
-Groovebox / mini-DAW techno profesional para navegador, construida con JavaScript y Web Audio API, sin frameworks. El núcleo funciona como aplicación estática y está preparado para GitHub Pages/PWA. Los codecs opcionales MP3/FLAC se descargan bajo demanda desde versiones fijadas y se cachean localmente para reutilización offline cuando el navegador lo permite.
+Groovebox / mini-DAW de música electrónica para navegador, construida con JavaScript y Web Audio API, sin frameworks. El núcleo funciona como aplicación estática y está preparado para GitHub Pages/PWA. Los codecs opcionales MP3/FLAC se descargan bajo demanda desde versiones fijadas y se cachean localmente para reutilización offline cuando el navegador lo permite.
 
+
+
+## Novedad V4.3: motor multi-género
+
+La V4.3 mantiene Techno como identidad principal, pero añade cinco modos musicales de primera clase sin duplicar la aplicación:
+
+- **Techno** — 136 BPM base; estilos Hypnotic, Detroit, Minimal, Acid, Industrial, Hard Techno, Dub Techno y Peak Time.
+- **Tech House** — 126 BPM base; Rolling, Groovy, Minimal y Percussive.
+- **House** — 124 BPM base; Classic, Piano, Jackin y Vocal Groove.
+- **Deep House** — 122 BPM base; Warm, Atmospheric, Soulful y Minimal Deep.
+- **Acid House** — 126 BPM base; Chicago 303, Warehouse, Psychedelic y Jack Acid.
+
+### Qué cambia al seleccionar un modo
+
+- BPM y swing base.
+- Perfil del mixer y master (sidechain, sends, drive, reverb, cutoff, compresión).
+- Catálogo de estilos del generador.
+- Reglas de batería, bajo, stabs/acordes, percusión y 303.
+- Automatizaciones generadas.
+- Construcción del Arranger: entrada progresiva de pistas y estructura base de 32 compases específica por género.
+
+**APPLY MODE no borra los patterns.** Ajusta el perfil sonoro global. `GENERATE <GÉNERO>` sí reemplaza el pattern seleccionado, como ya ocurría con el generador Techno, y puede revertirse con Undo.
+
+Los proyectos V4.x anteriores se migran automáticamente a `genre: techno` cuando no contienen información de género.
 
 ## Novedad V4.2: exportación multiformato profesional
 
@@ -72,7 +96,8 @@ La apariencia se aplica también a automation lanes, waveform, analizador FFT, p
 - Velocity, probability, ratchet, pitch, microtiming, gate, accent, glide y filter locks.
 - 16 patterns A1–D4.
 - Live Scenes con lanzamiento cuantizado.
-- Generadores: Hypnotic, Detroit, Minimal, Acid, Industrial, Hard Techno, Dub Techno y Peak Time.
+- Motor multi-género: Techno, Tech House, House, Deep House y Acid House.
+- Generadores contextuales por género con 24 estilos en total.
 - Humanize y ritmos euclídeos.
 - Acid piano roll.
 - Clips MIDI editables para Bass / Stab / Acid.
@@ -117,7 +142,7 @@ Si Python no está disponible, el BAT intenta abrir `index.html` directamente. E
 ## Estructura
 
 ```text
-Techno-404-Studio_V4.2.0/
+Techno-404-Studio_V4.3.0/
 ├── index.html
 ├── ABRIR_TECHNO_404.bat
 ├── README.md
@@ -134,6 +159,7 @@ Techno-404-Studio_V4.2.0/
 │   └── static-qa.py
 └── js/
     ├── state.js
+    ├── genres.js
     ├── arranger.js
     ├── midi-clips.js
     ├── audio-engine.js
@@ -151,6 +177,6 @@ Techno-404-Studio_V4.2.0/
 
 ## Filosofía de V4.x
 
-La rama V4 prioriza profundidad y estabilidad sobre acumular funciones. V4.1 consolidó la experiencia visual y V4.2 completa una carencia práctica importante —la salida MP3/FLAC— sin sustituir el motor musical ni introducir un backend.
+La rama V4 prioriza profundidad y estabilidad sobre acumular funciones. V4.1 consolidó la experiencia visual, V4.2 añadió MP3/FLAC y V4.3 amplía la composición a cinco familias de música electrónica sin sustituir el motor musical ni introducir un backend.
 
 Consulta `QA_REPORT.md` para las comprobaciones realizadas sobre esta entrega. La prueba final de MP3/FLAC debe hacerse al menos una vez en Chrome/Edge real con conexión para preparar los codecs y después repetirla offline.

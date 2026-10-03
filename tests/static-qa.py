@@ -25,6 +25,15 @@ else:
         if e=='./': continue
         rel=e[2:] if e.startswith('./') else e
         if not (ROOT/rel).is_file(): errors.append('Precache ausente: '+e)
+
+# V4.3 multi-genre surface must exist.
+for required in ['genreSelect','applyGenreBtn','styleSelect','generateBtn']:
+    if required not in idset: errors.append('Control multi-género ausente: '+required)
+if './js/genres.js' not in sw: errors.append('Service Worker no precachea genres.js')
+genres=(ROOT/'js/genres.js').read_text(encoding='utf-8') if (ROOT/'js/genres.js').is_file() else ''
+for genre in ['techno','tech-house','house','deep-house','acid-house']:
+    if genre not in genres: errors.append('Perfil de género ausente: '+genre)
+
 # User-controlled names must no longer be injected through innerHTML in v4 UI.
 v4=(ROOT/'js/v4-ui.js').read_text(encoding='utf-8')
 if re.search(r'innerHTML\s*=.*(?:row\.name|pad\.fileName|pad\.name)',v4): errors.append('innerHTML inseguro con nombre de sample/pad')
@@ -33,7 +42,7 @@ app=(ROOT/'js/app.js').read_text(encoding='utf-8')
 if "clearPatternBtn').onclick" not in app or 'T.makeEmptyPattern()' not in app: errors.append('CLEAR PATTERN no usa makeEmptyPattern')
 # Version coherence.
 for f in ['index.html','sw.js','ABRIR_TECHNO_404.bat']:
-    if '4.1.0' in (ROOT/f).read_text(encoding='utf-8'): errors.append(f'Versión antigua en {f}')
+    if any(v in (ROOT/f).read_text(encoding='utf-8') for v in ['4.1.0','4.2.0']): errors.append(f'Versión antigua en {f}')
 if errors:
     print('FAIL static-qa')
     for e in errors: print('-',e)

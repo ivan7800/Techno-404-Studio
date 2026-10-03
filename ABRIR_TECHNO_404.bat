@@ -1,11 +1,11 @@
 @echo off
 setlocal
 cd /d "%~dp0"
-title Techno 404 Studio v4.2.0
+title Techno 404 Studio v4.3.0
 set "PORT=8040"
 set "URL=http://127.0.0.1:%PORT%"
 echo ==============================================
-echo       TECHNO 404 STUDIO v4.2.0
+echo       TECHNO 404 STUDIO v4.3.0
 echo ==============================================
 echo.
 echo Iniciando servidor local en %URL% ...

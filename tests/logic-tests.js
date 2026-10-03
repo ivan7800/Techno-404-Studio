@@ -28,6 +28,7 @@ function hits(pattern){
 
 (async()=>{
   load('js/state.js');
+  load('js/genres.js');
   load('js/arranger.js');
   load('js/midi-clips.js');
   load('js/generator.js');
@@ -88,6 +89,28 @@ function hits(pattern){
     }
   }
 
+  // V4.3 genre engine: every mode must generate a usable groove and genre-specific arrangement.
+  const genreCases=[
+    ['techno','hypnotic',134],['tech-house','rolling',126],['house','classic',124],['deep-house','warm',122],['acid-house','chicago303',126]
+  ];
+  for(const [genre,style,expectedBpm] of genreCases){
+    Techno404.State.project=Techno404.makeDefaultProject();
+    Techno404.State.project.patterns.A1=Techno404.makeEmptyPattern();
+    Techno404.State.project.currentPattern='A1';
+    Techno404.Genres.apply(Techno404.State.project,genre);
+    Techno404.Generator.generate(style,72,70,58);
+    assert.strictEqual(Techno404.State.project.genre,genre);
+    assert.strictEqual(Techno404.State.project.bpm,expectedBpm);
+    assert(hits(Techno404.State.project.patterns.A1)>0,`${genre} debe generar golpes`);
+    Techno404.Generator.createArrangement();
+    assert.strictEqual(Techno404.State.project.arranger.lengthBars,32,`${genre} arranger debe ser 32 bars`);
+    assert(Techno404.State.project.arranger.clips.length>0,`${genre} debe crear clips`);
+    if(genre==='acid-house') assert(Techno404.State.project.patterns.A1.tracks.acid.some(s=>s.on),'Acid House debe usar la pista ACID');
+  }
+
+  // Legacy project without genre must migrate safely to techno.
+  assert.strictEqual(Techno404.normalizeProject({name:'Legacy'}).genre,'techno');
+
   // Storage must fail closed instead of crashing when localStorage is blocked.
   assert.strictEqual(Techno404.Storage.saveProject(Techno404.State.project),true);
   const originalSet=localStorage.setItem;
@@ -139,5 +162,5 @@ function hits(pattern){
   assert.strictEqual(flac.type,'audio/flac');
   assert(flac.size>0,'FLAC fake debe producir datos');
 
-  console.log('PASS logic-tests: export multiformato + invariantes de patrones/generador');
+  console.log('PASS logic-tests: 5 genre modes + export multiformato + invariantes');
 })().catch(err=>{console.error(err);process.exit(1);});

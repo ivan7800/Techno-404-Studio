@@ -185,3 +185,11 @@ html[data-density="compact"] .section-title{margin-bottom:7px;padding-bottom:5px
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
 
 [hidden]{display:none!important}
+
+
+/* V4.3 multi-genre controls */
+.genre-generator{position:relative}
+.genre-generator::before{content:"GENRE ENGINE";font-size:9px;letter-spacing:.12em;color:var(--accent);opacity:.72;margin-right:2px}
+#genreSelect{min-width:122px;border-color:color-mix(in srgb,var(--accent) 48%,var(--line2))}
+#applyGenreBtn{font-size:10px;letter-spacing:.05em}
+@media(max-width:760px){.genre-generator::before{width:100%}#genreSelect{min-width:0}}

@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#070a0f">
-  <meta name="description" content="Techno 404 Studio v4.2.0: workstation techno premium con skins, arranger, clips MIDI, sampler multipad, modulación y exportación en el navegador.">
-  <title>Techno 404 Studio v4.2.0</title>
+  <meta name="description" content="Techno 404 Studio v4.3.0: workstation electrónica premium con modos Techno, Tech House, House, Deep House y Acid House, arranger, MIDI, sampler y exportación WAV/MP3/FLAC.">
+  <title>Techno 404 Studio v4.3.0</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon-192.png">
   <link rel="stylesheet" href="css/app.css">
@@ -15,7 +15,7 @@
   <header class="topbar panel">
     <div class="brand">
       <div class="brand-mark">404</div>
-      <div><strong>TECHNO 404 STUDIO</strong><span>V4.2.0 · PREMIUM MODULAR BROWSER DAW</span></div>
+      <div><strong>TECHNO 404 STUDIO</strong><span>V4.3.0 · MULTI-GENRE ELECTRONIC BROWSER DAW</span></div>
     </div>
     <div class="transport">
       <button id="playBtn" class="primary">▶ PATTERN</button>
@@ -58,12 +58,12 @@
       <button id="humanizeBtn">HUMANIZE</button>
       <button id="euclidBtn">EUCLID</button>
     </div>
-    <div class="control-group generator">
-      <label>STYLE <select id="styleSelect">
-        <option value="hypnotic">Hypnotic</option><option value="detroit">Detroit</option><option value="minimal">Minimal</option>
-        <option value="acid">Acid</option><option value="industrial">Industrial</option><option value="hard">Hard Techno</option>
-        <option value="dub">Dub Techno</option><option value="peak">Peak Time</option>
+    <div class="control-group generator genre-generator">
+      <label>MODE <select id="genreSelect" title="Adapta BPM, swing, mixer, master, generador y arranger al género">
+        <option value="techno">Techno</option><option value="tech-house">Tech House</option><option value="house">House</option><option value="deep-house">Deep House</option><option value="acid-house">Acid House</option>
       </select></label>
+      <button id="applyGenreBtn" title="Aplica el perfil sonoro del modo sin borrar tus patterns">APPLY MODE</button>
+      <label>STYLE <select id="styleSelect"></select></label>
       <label>ENERGY <input id="energyInput" type="range" min="0" max="100" value="72"></label>
       <label>DARK <input id="darkInput" type="range" min="0" max="100" value="78"></label>
       <label>COMPLEX <input id="complexInput" type="range" min="0" max="100" value="58"></label>
@@ -275,10 +275,11 @@
     </main>
   </section>
 
-  <footer><span>Techno 404 Studio v4.2.0</span><span id="statusText" role="status" aria-live="polite">Listo.</span><span>7 Skins · Premium UI · Web Audio · MIDI · WAV · MP3 · FLAC · Stems · PWA</span></footer>
+  <footer><span>Techno 404 Studio v4.3.0</span><span id="statusText" role="status" aria-live="polite">Listo.</span><span>5 Genre Modes · 7 Skins · Web Audio · MIDI · WAV · MP3 · FLAC · Stems · PWA</span></footer>
 </div>
 
 <script src="js/state.js"></script>
+<script src="js/genres.js"></script>
 <script src="js/arranger.js"></script>
 <script src="js/midi-clips.js"></script>
 <script src="js/audio-engine.js"></script>
