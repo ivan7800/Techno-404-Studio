@@ -1,7 +1,7 @@
-const CACHE='techno404-v4.2.0';
+const CACHE='techno404-v4.3.0';
 const FILES=[
   './','./index.html','./css/app.css',
-  './js/state.js','./js/arranger.js','./js/midi-clips.js','./js/audio-engine.js','./js/modulation.js','./js/sequencer.js','./js/generator.js','./js/midi.js','./js/storage.js','./js/codecs.js','./js/exporter.js','./js/v4-ui.js','./js/premium-ui.js','./js/app.js',
+  './js/state.js','./js/genres.js','./js/arranger.js','./js/midi-clips.js','./js/audio-engine.js','./js/modulation.js','./js/sequencer.js','./js/generator.js','./js/midi.js','./js/storage.js','./js/codecs.js','./js/exporter.js','./js/v4-ui.js','./js/premium-ui.js','./js/app.js',
   './manifest.webmanifest','./icon-192.png','./icon-512.png'
 ];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES)).then(()=>self.skipWaiting())));

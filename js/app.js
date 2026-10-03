@@ -79,6 +79,17 @@ window.Techno404 = window.Techno404 || {};
     engine.applyMixer(project().mixer);
   }
 
+  function populateGenreStyles(preferred) {
+    const select = $('#styleSelect');
+    if (!select || !T.Genres) return;
+    const profile = T.Genres.get(project().genre);
+    const keep = preferred || select.value;
+    select.innerHTML = '';
+    profile.styles.forEach(([value,label]) => select.add(new Option(label,value)));
+    select.value = profile.styles.some(([value]) => value === keep) ? keep : profile.defaultStyle;
+    $('#generateBtn').textContent = `GENERATE ${profile.label.toUpperCase()}`;
+  }
+
   function fillPatternSelects() {
     ['#patternSelect','#arrangerAutomationPattern','#arrangerClipPattern','#clipPatternInput'].forEach(id => {
       const el = $(id);
@@ -94,6 +105,8 @@ window.Techno404 = window.Techno404 || {};
 
   function syncControls() {
     const p = project();
+    if ($('#genreSelect')) $('#genreSelect').value = p.genre || 'techno';
+    populateGenreStyles();
     $('#projectNameInput').value = p.name;
     $('#bpmInput').value = p.bpm;
     $('#swingInput').value = p.swing;
@@ -454,7 +467,19 @@ window.Techno404 = window.Techno404 || {};
   }
 
   function bindGenerator() {
-    $('#generateBtn').onclick=()=>{snapshot();T.Generator.generate($('#styleSelect').value,Number($('#energyInput').value),Number($('#darkInput').value),Number($('#complexInput').value));renderAll();remember();toast('Pattern techno generado.');};
+    const applyMode=(withSnapshot=true)=>{
+      const id=$('#genreSelect').value;
+      if(withSnapshot)snapshot();
+      project().genre=id;
+      const profile=T.Genres.apply(project(),id,{rename:false});
+      populateGenreStyles(profile.defaultStyle);
+      engine.setMaster(project().master);engine.applyMixer(project().mixer);
+      syncControls();renderMixer();drawAutomation();remember();
+      toast(`${profile.label}: perfil aplicado · ${project().bpm} BPM · swing ${project().swing}%.`,2600);
+    };
+    $('#genreSelect').onchange=()=>applyMode(true);
+    $('#applyGenreBtn').onclick=()=>applyMode(true);
+    $('#generateBtn').onclick=()=>{snapshot();const profile=T.Genres.get(project().genre);T.Generator.generate($('#styleSelect').value,Number($('#energyInput').value),Number($('#darkInput').value),Number($('#complexInput').value));renderAll();remember();toast(`Pattern ${profile.label} generado.`);};
     $('#acidRandomBtn').onclick=()=>{snapshot();T.Generator.acidLine();S.selectedTrack='acid';renderAll();remember();};
   }
 
@@ -481,7 +506,7 @@ window.Techno404 = window.Techno404 || {};
     $('#arrangerAutomationPattern').onchange=e=>{project().arranger.automationPattern=e.target.value;remember();};
     if($('#arrangerZoomInput')) $('#arrangerZoomInput').oninput=e=>{project().arranger.zoom=clamp(Number(e.target.value)||1,.5,2.5);renderArranger();remember();};
     $('#addClipBtn').onclick=()=>{snapshot();project().arranger.enabled=true;const track=S.selectedTrack;const clips=T.Arranger.clipsForTrack(track);const bar=clips.length?Math.min(project().arranger.lengthBars-1,Math.max(...clips.map(c=>c.bar+c.bars))):0;const c=T.Arranger.addClip(track,$('#arrangerClipPattern').value,bar,1);S.selectedClipId=c.id;renderArranger();remember();};
-    $('#generateArrangementBtn').onclick=()=>{snapshot();T.Generator.createArrangement();project().arranger.enabled=true;S.selectedClipId=null;syncControls();renderArranger();remember();toast('Arranger base generado.');};
+    $('#generateArrangementBtn').onclick=()=>{snapshot();T.Generator.createArrangement();project().arranger.enabled=true;S.selectedClipId=null;syncControls();renderArranger();remember();toast(`Arranger ${T.Genres?.label(project().genre)||'base'} generado.`);};
     $('#clipPatternInput').onchange=e=>{const c=selectedClip();if(!c)return;snapshot();c.pattern=e.target.value;renderArranger();remember();};
     if($('#clipTypeInput')) $('#clipTypeInput').onchange=e=>{const c=selectedClip();if(!c)return;snapshot();T.Arranger.setClipType(c.id,e.target.value);renderArranger();remember();};
     if($('#clipSourceInput')) $('#clipSourceInput').onchange=e=>{const c=selectedClip();if(!c)return;snapshot();if(c.type==='midi')c.midiClipId=e.target.value;else c.pattern=e.target.value;renderArranger();remember();};
@@ -562,7 +587,7 @@ window.Techno404 = window.Techno404 || {};
     window.addEventListener('techno404:themechange',()=>renderAll());
     spectrum();
     if('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(()=>{});
-    status('V4.2.0 lista. WAV/MP3/FLAC, Premium UI, 7 skins, ARRANGER, MIDI clips y 16 pads preparados.');
+    status('V4.3.0 lista. Techno / Tech House / House / Deep House / Acid House + WAV/MP3/FLAC.');
   }
 
   main().catch(e=>{console.error(e);toast(`Inicio: ${e.message}`,4000);});

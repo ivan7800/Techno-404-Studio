@@ -1,4 +1,4 @@
-# THIRD PARTY NOTICES — Techno 404 Studio v4.2.0
+# THIRD PARTY NOTICES — Techno 404 Studio v4.3.0
 
 Techno 404 Studio no incluye estos codecs dentro del ZIP. Se cargan bajo demanda desde URLs fijadas por versión y el navegador intenta conservarlos en Cache Storage para reutilización offline.
 

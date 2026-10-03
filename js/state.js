@@ -90,7 +90,7 @@ window.Techno404 = window.Techno404 || {};
     const firstMidi = makeMidiClip('Acid Hook','acid',2);
     return {
       version: 4,
-      name:'Untitled Techno', bpm:136, swing:10, steps:64, currentPattern:'A1',
+      name:'Untitled Techno', genre:'techno', bpm:136, swing:10, steps:64, currentPattern:'A1',
       patterns, mixer, sampler,
       master:{
         volume:82, filter:16000, drive:18, delay:15, reverb:10, bassCutoff:1200, bassRes:15,
@@ -133,7 +133,7 @@ window.Techno404 = window.Techno404 || {};
 
   function normalize(raw){
     const base=makeDefaultProject(); if(!raw||typeof raw!=='object')return base;
-    base.name=String(raw.name||base.name).slice(0,80); base.bpm=clamp(asNum(raw.bpm,base.bpm),70,210); base.swing=clamp(asNum(raw.swing,base.swing),0,70);
+    base.name=String(raw.name||base.name).slice(0,80); base.genre=['techno','tech-house','house','deep-house','acid-house'].includes(raw.genre)?raw.genre:'techno'; base.bpm=clamp(asNum(raw.bpm,base.bpm),70,210); base.swing=clamp(asNum(raw.swing,base.swing),0,70);
     base.steps=[16,32,64].includes(Number(raw.steps))?Number(raw.steps):64; base.currentPattern=T.PATTERN_IDS.includes(raw.currentPattern)?raw.currentPattern:'A1';
 
     if(raw.master&&typeof raw.master==='object'){
@@ -188,7 +188,7 @@ window.Techno404 = window.Techno404 || {};
     }
 
     if(raw.song&&typeof raw.song==='object'){base.song.chain=String(raw.song.chain||base.song.chain).slice(0,220);base.song.repeats=clamp(Math.round(asNum(raw.song.repeats,2)),1,16);}
-    base.version=4;
+    base.version=4.3;
     return base;
   }
 
